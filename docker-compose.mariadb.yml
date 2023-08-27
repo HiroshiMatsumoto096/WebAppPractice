@@ -1,0 +1,15 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb
+    restart: always
+    ports:
+      - 3308:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: piroro
+      MARIADB_DATABASE: piro
+      MARIADB_USER: piro
+      MARIADB_PASSWORD: piro
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./MariaDB/data:/var/lib/mysql

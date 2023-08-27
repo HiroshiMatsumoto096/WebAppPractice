@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres:
+    build: ./PostgreSQL/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./PostgreSQL:/work
+    working_dir: /work
+  mariadb:
+    build: ./MariaDB/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./PostgreSQL:/work
+    working_dir: /work
+      
+      
