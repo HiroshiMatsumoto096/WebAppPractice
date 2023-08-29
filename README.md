@@ -1,6 +1,14 @@
 # WebApp
 
+ユーザ管理ツール
+
+1画面完結型
+
+
 ## 準備
+- DB構築
+- Nuxt Server (API)
+- Prisma
 
 ### MariaDB
 
@@ -8,54 +16,66 @@ https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relat
 
 `MSQL/data`のディレクトリ作成を作成する
 
-`.env.mysql`を`.env`としてコピー
+```
+docker-compose up --build -d
+```
 
-`docker-compose up --file docker-compose.mysql.yml --build -d` 
+オプション説明  
+`-d` : 裏で動作させる: 実行結果などを非表示
 
-### PostgreSQL
+### DB動作確認
 
-`Postgresql/data`のディレクトリ作成を作成する
+```
+docker-compose exec mariadb bash
+```
 
-PostgreSQL環境構築は以下のリンクを完コピ
+コマンド説明  
+- `exec`: `docker-compose`のサブコマンド
+  - `up` : 起動: 「docker-compose.yml 内に書かれているサービス群を起動して！」
+  - `down` : シャットダウン: 「docker-compose.yml 内に書かれているサービス群をシャットダウンして！」
+  - サブコマンドによって以降に続く引数が変わる
+- `mariadb`: `docker-compose.yml`内に記述されているサービス名 
+- `bash`: `mariadb`コンテナ上で動かすコマンド
+- docker-composeはファイル指定しないと、デフォルトで`docker-compose.yml`を読み込む 
 
-https://qiita.com/takumiw/items/281c86d74b7049dcf846
+`docker-compose exec mariadb bash`は意訳すると、  
+`docker-compose.yml`の`mariadb`サービス上で、`bash`を実行(`exec`)して！
 
-`docker-compose up --build -d` 後、 ユーザ、DBの作成を行う
+実行すると、以下のようなプロンプトが表示される.  
+(Linuxの世界に突入)
 
-ユーザ作成
+```
+root@11512asdf:/#
+```
 
-`createuser -U postgres piro`
+mariadbの`REPL`に入る  
+(REPL: read evaluate print loop)
 
-createuser のオプション  
-- h: サーバーのホスト名やIPを指定
-- p: ポート番号を指定
-- U: createuserを実行するユーザー
-- d: データベースの作成権限、D:データベースの作成できない権限
-- l: ログイン権限、L:ログイン不可権限
-- r: ユーザー作成の権限、R:ユーザー作成ができない権限
-- s: スーパーユーザー権限の付与、S:スーパーユーザーでない権限の付与
-- P: パスワード設定する（厳密には実行時に、パスワード設定メッセージが表示される）
+```
+root@11512asdf:/# mariadb -u piro -D piro -ppiro
+```
 
-DB作成
+コマンドオプション説明  
+- `-u`: ユーザ@`mariadb`の指定
+- `-D`: データベースの指定
+- `-ppiro`: ユーザ@`mariadb`のパスワード; `-p`に空白なしで続けて入力することでパスワード入力を回避
+  - `-p`だけにしたら、別途パスワード入力が求められる
+  - 本番環境などではこのやり方はお勧めできない
 
-`createdb -U postgres -O piro -E UTF8 --locale=ja_JP.UTF-8 -T template0 piro_db`
+(MariaDBの世界に突入)
+```
+Server version: 11.0.3-MariaDB-1:11.0.3+maria~ubu2204 mariadb.org binary distribution
 
-https://www.postgresql.jp/document/9.1/html/app-createdb.html
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
-createdbオプション
-- -U 接続に使用するユーザ名を指定します。
-- -O 所有者
-- -E エンコーディング: ユニコードがいいかと(utf8)
-- -locale
-  - https://www.postgresql.jp/document/13/html/multibyte.html
-  - 選択肢、`locale -a`@ターミナル閲覧可能
-  - まぁ、`ja_JP.UTF-8`がよろしいかと
-- -T 使用するテンプレート
-  - 使えるテンプレートは`\l`@REPLで確認可能
-	- REPL起動 `psql -U piro piro_db`
-  - https://www.postgresql.jp/document/9.4/html/manage-ag-templatedbs.html
-  - template0 と template1 の大差はない
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
+MariaDB [piro]>
+```
+
+この画面で新しいDBの作成、ユーザ作成、テーブル作成、テーブルのデータ操作が可能
+
+https://shelokuma.com/2023/02/17/command-list-for-mariadb/
 
 ## Nuxt Server
 
@@ -80,7 +100,6 @@ export default defineEventHandler((event) => {
 ```
 
 `curl`で動作確認
-
 ``` bash
 curl localhost:3000/api/hello
 ```
@@ -90,8 +109,23 @@ curl localhost:3000/api/hello
 ``` bash
 {
   "hello": "world"
-}                                                                                                                                                           ```
+}
 ```
+
+[x] API動作確認
+
+余談:  
+`curl`コマンドはこのようにAPI確認に使えるコマンドです。  
+実装中、問題解決の際にフロントとバックエンドのどっちの問題かの切り分けに使えます！
+
+(メソッド(GET,POST, DELETE, PUT)によってオプションが変わります。)  
+メソッドについては後程説明します。
+
+GUIで確認したい方は`Postman`というツールがあります。  
+https://www.postman.com/
+
+https://www.postman.com/downloads/
+
 
 ### Prisma
 
@@ -99,9 +133,15 @@ curl localhost:3000/api/hello
 
 https://www.prisma.io/docs/getting-started/quickstart
 
-`yarn add prisma typescript ts-node @types/node`
+```
+yarn add prisma typescript ts-node @types/node
+```
 
-`yarn prisma init --datasource-provider mysql`  
+MYSQLとの連携設定
+
+```
+yarn prisma init --datasource-provider mysql
+```
 
 mysql for mariadb
 
