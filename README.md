@@ -118,16 +118,15 @@ curl localhost:3000/api/hello
 `curl`コマンドはこのようにAPI確認に使えるコマンドです。  
 実装中、問題解決の際にフロントとバックエンドのどっちの問題かの切り分けに使えます！
 
-(メソッド(GET,POST, DELETE, PUT)によってオプションが変わります。)  
+(HTTPリクエスト・メソッド(GET,POST, DELETE, PUT)によってオプションが変わります。)  
 メソッドについては後程説明します。
 
 GUIで確認したい方は`Postman`というツールがあります。  
 https://www.postman.com/
-
 https://www.postman.com/downloads/
 
 
-### Prisma
+## Prisma
 
 `prisma` のインストール
 
@@ -137,13 +136,16 @@ https://www.prisma.io/docs/getting-started/quickstart
 yarn add prisma typescript ts-node @types/node
 ```
 
-MYSQLとの連携設定
+MariaDBとの連携設定
+
+`prisma`は`MariaDB`対応していない。  
+ただ、`MariaDB`は`MySQL`はほぼほぼ同じDBであり互換が効くので`MySQL`を`DataSource-Provider`として利用する.
+
+`MySQL`として初期化
 
 ```
 yarn prisma init --datasource-provider mysql
 ```
-
-mysql for mariadb
 
 https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#datasource
 
@@ -161,15 +163,32 @@ Next steps:
 More information in our documentation:
 https://pris.ly/d/getting-started
 ```
+ 
+要約
+1. `.env`に使用するDBを指す`DATABASE_URL`変数の設定を設けよ.  
+2. `prisma db pull` をつかって使用中の`DB`設定(`schema`)を`prisma`に取り込む.
+3. `prisma generate`で`prisma client`を生成する
 
-app/.env
+課題:
 
+現在`.env`が二つある状態になっている
+- .env
+- app/.env
+
+さらに、`docker-compose.yml`で`.env`の内容を読み込む設定をしていないです。
+- docker-compose.yml
+
+
+付け焼刃状態です。
+
+`app/.env`
 ```
-DATABASE_URL="mysql://root:piroro@localhost:3308/piro"
+DATABASE_URL="mysql://piro:piro@localhost:3308/piro"
 ```
 
 希望としては以下の様な記述で動くとよい
 
+`.env`
 ```
 MYSQL_ROOT_PASSWORD="piroro"
 MYSQL_DATABASE="piro"
@@ -188,6 +207,8 @@ DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT
 docker-compose.ymlと同じフォルダの.envのシンボリックリンクを作成し、prismaでも.envとして読ませる
 
 ## migration
+
+`prisma`を使ってデータベースのテーブル構築
 
 `prisma/schema.prisma`
 
@@ -209,16 +230,15 @@ model User {
 }
 ```
 
+マイグレーション処理実行
 
 ```
 yarn prisma migrate dev --name init
 ```
 
 ### API Access確認
-`index.vue`
 
-`<script>`内に  
-
+`index.vue`の`<script>`内に  
 ```
 const addNewUser = () => {
     const response = useFetch('/api/user', {
@@ -257,8 +277,8 @@ export default defineEventHandler(async (event) => {
 user.post.ts
 { name: 'Hiroshi Matsumoto' }
 ```
-[x] フロントとバックエンドの通信確認 
-[x] バックエンドの動作確認
+[x] フロントとバックエンドの通信確認  
+[x] バックエンドの動作確認  
 [x] バックエンドのconsole.log (プリント)確認
 
 
@@ -312,12 +332,11 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
-@unique削除: unique constrainエラー???
 ```
 model User {
     id          Int         @id @default(autoincrement())
     createdAt   DateTime    @default(now())
-    email       String 
+    email       String      @unique
     name        String?
 }
 ```
