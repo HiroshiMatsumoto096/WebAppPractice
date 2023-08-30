@@ -433,3 +433,80 @@ const getUser = async () => {
 新しいユーザを追加して動作確認
 
 ```
+
+### D: Delete
+```
+const delUser = async (user_id) => {
+    console.log('delUser')
+    const response = await useFetch('/api/user', {
+        body: {user_id: user_id}, 
+        method: 'DELETE',
+    })
+    if(response.error.value){
+       console.log(response.error) 
+    }
+    // リスト更新
+    await refreshUserList()
+}
+```
+
+```
+const user_list_header = ref([])
+user_list_header.value = [
+    {
+        key: 'name',
+        title: '名前',
+        align: 'start', 
+        width: 70,
+    },
+    {
+        key: 'email',
+        title: 'email', 
+        align: 'center',
+        width: 100,
+    },
+    {
+        key: 'delete',
+        title: '削除', 
+        align: 'center',
+        width: 100,
+    },
+]
+```
+
+```
+<v-card-text align="center">
+    <v-data-table :items="user_list" :headers="user_list_header">
+        <template v-slot:item.name="{item}">
+            {{ item.raw.name }}
+        </template>
+        <template v-slot:item.email="{item}">
+            {{ item.raw.email }}
+        </template>
+        <template v-slot:item.delete="{item}">
+            <v-btn @click="delUser(item.raw.id)">削除</v-btn>
+        </template>
+        <template #bottom></template>
+    </v-data-table>
+</v-card-text>
+```
+
+`user.delete.ts`
+```
+import { PrismaClient } from `@prisma/client` 
+
+const prisma = new PrismaClient()
+
+export default defineEventHandler(async (event) => {
+    console.log('user.delete.ts')
+    const body = await readBody(event)
+    console.log('body: ', body)
+    const user = await prisma.user.delete({
+        where: {
+            id: body.user_id
+        },
+    })
+    const response = await prisma.$disconnect()
+})
+```
+

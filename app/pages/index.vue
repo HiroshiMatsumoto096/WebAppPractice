@@ -7,20 +7,33 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 // console.log(hello_data.value)
 // const { data:user_data } = await useFetch('/api/user')
 
+// 
+/*
+const user_id = ref(11)
 const name = ref("Hiroshi Matsumoto")
 const email = ref("matsumoto@michiru.co.jp")
+*/
+const user_id = ref()
+const name = ref()
+const email = ref()
 
-const addNewUser = () => {
+const upsertUser = () => {
+    console.log(user_id.value)
+    console.log(name.value)
+    console.log(email.value)
     const response = useFetch('/api/user', {
-       method: 'POST',
+       method: 'UPDATE',
        body: { 
+            user_id: user_id.value,
             name: name.value,
-            email: email.value
+            email: email.value,
         } 
     })
+    console.log(response.error)
 }
 
 const {data:user_list, error:user_list_error, refresh:refreshUserList} = await useFetch('/api/user')
+// const user_list = await useFetch('/api/user', transform: result => result.data)
 /*
 const user_list = reft([])
 // const userlist= await useFetch('/api/hello')
@@ -34,6 +47,28 @@ const getUser = async () => {
 }
 */
 
+const delUser = async (user_id) => {
+    console.log('delUser')
+    const response = await useFetch('/api/user', {
+        body: {user_id: user_id}, 
+        method: 'DELETE',
+    })
+    if(response.error.value){
+       console.log(response.error) 
+    }
+    await refreshUserList()
+}
+
+
+const loadUser = async (target_user_id) => {
+    console.log('loadUser')
+    const match_user = user_list.value.find((user) => user.id === target_user_id)
+    user_id.value = match_user.id 
+    name.value = match_user.name
+    email.value = match_user.email
+}
+
+
 const user_list_header = ref([])
 user_list_header.value = [
     {
@@ -46,7 +81,13 @@ user_list_header.value = [
         key: 'email',
         title: 'email', 
         align: 'center',
-        width: 100,
+        width: 90,
+    },
+    {
+        key: 'options',
+        title: 'オプション', 
+        align: 'center',
+        width: 200,
     },
 ]
 
@@ -73,6 +114,10 @@ onMounted(() => {
                         <template v-slot:item.email="{item}">
                             {{ item.raw.email }}
                         </template>
+                        <template v-slot:item.options="{item}">
+                            <v-btn compact @click="loadUser(item.raw.id)">更新</v-btn>
+                            <v-btn compact @click="delUser(item.raw.id)">削除</v-btn>
+                        </template>
                         <template #bottom></template>
                     </v-data-table>
                 </v-card-text>
@@ -84,7 +129,7 @@ onMounted(() => {
            入力 
         </v-card-title>
         <v-card-text align="center">
-           <v-form @submit="addNewUser">
+           <v-form @submit="upsertUser">
              <v-text-field v-model=name label="name"></v-text-field> 
              <v-text-field v-model=email label="email"></v-text-field> 
              <v-btn type="submit">submit</v-btn>
