@@ -122,15 +122,15 @@ curl localhost:3000/api/hello
 メソッドについては後程説明します。
 
 GUIで確認したい方は`Postman`というツールがあります。  
-https://www.postman.com/
-https://www.postman.com/downloads/
+https://www.postman.com/  
+https://www.postman.com/downloads/  
 
 
 ## Prisma
 
 `prisma` のインストール
 
-https://www.prisma.io/docs/getting-started/quickstart
+https://www.prisma.io/docs/getting-started/quickstart  
 
 ```
 yarn add prisma typescript ts-node @types/node
@@ -142,6 +142,7 @@ MariaDBとの連携設定
 ただ、`MariaDB`は`MySQL`はほぼほぼ同じDBであり互換が効くので`MySQL`を`DataSource-Provider`として利用する.
 
 `MySQL`として初期化
+
 
 ```
 yarn prisma init --datasource-provider mysql
@@ -169,25 +170,6 @@ https://pris.ly/d/getting-started
 2. `prisma db pull` をつかって使用中の`DB`設定(`schema`)を`prisma`に取り込む.
 3. `prisma generate`で`prisma client`を生成する
 
-課題:
-
-現在`.env`が二つある状態になっている
-- .env
-- app/.env
-
-さらに、`docker-compose.yml`で`.env`の内容を読み込む設定をしていないです。
-- docker-compose.yml
-
-
-付け焼刃状態です。
-
-`app/.env`
-```
-DATABASE_URL="mysql://piro:piro@localhost:3308/piro"
-```
-
-希望としては以下の様な記述で動くとよい
-
 `.env`
 ```
 MYSQL_ROOT_PASSWORD="piroro"
@@ -199,10 +181,6 @@ MYSQL_PORT="3308"
 
 DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}"
 ```
-
-さらに、
-`docker-compose.yml`
-が以下の様に記述できると嬉しい
 
 docker-compose.ymlと同じフォルダの.envのシンボリックリンクを作成し、prismaでも.envとして読ませる
 
@@ -245,6 +223,7 @@ const addNewUser = () => {
        method: 'POST',
        body: { 
             name: 'Hiroshi Matsumoto',
+            email: 'piro@michiru.co.jp',
         } 
     })
 }
@@ -259,7 +238,6 @@ const addNewUser = () => {
  <v-btn type="submit">submit</v-btn>
 </v-form> 
 ```
-
 
 `server/api/user.posts.ts`に  
 
@@ -277,6 +255,7 @@ export default defineEventHandler(async (event) => {
 user.post.ts
 { name: 'Hiroshi Matsumoto' }
 ```
+
 [x] フロントとバックエンドの通信確認  
 [x] バックエンドの動作確認  
 [x] バックエンドのconsole.log (プリント)確認
