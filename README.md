@@ -6,9 +6,57 @@
 
 
 ## 準備
+- vuetify@nuxt適用
 - DB構築
 - Nuxt Server (API)
 - Prisma
+
+### vuetify@nuxt
+
+```
+yarn add vuetify@latest
+```
+
+``` typescript
+// https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+  build: {
+    transpile: ['vuetify'],
+  },
+  vite: {
+    define: {
+      'process.env.DEBUG': false,
+    },
+  },
+  css: ['@/assets/main.scss'],
+})
+```
+
+`assets/main.scss`
+``` scss
+@use "vuetify/styles";
+```
+
+`server/plugins/vuetify.ts`
+
+``` typescript
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+export default defineNuxtPlugin(nuxtApp => {
+  const vuetify = createVuetify({
+    ssr: true,
+    components,
+    directives,
+  })
+
+  nuxtApp.vueApp.use(vuetify)
+})
+```
 
 ### MariaDB
 
@@ -60,7 +108,7 @@ root@11512asdf:/# mariadb -u piro -D piro -ppiro
 - `-D`: データベースの指定
 - `-ppiro`: ユーザ@`mariadb`のパスワード; `-p`に空白なしで続けて入力することでパスワード入力を回避
   - `-p`だけにしたら、別途パスワード入力が求められる
-  - 本番環境などではこのやり方はお勧めできない
+  - 本番環境などではこのパスワードを続けて記述する方法はお勧めできない
 
 (MariaDBの世界に突入)
 ```
@@ -72,6 +120,27 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 MariaDB [piro]>
 ```
+
+DBに権限付与  
+
+`root`ユーザで`mariadb`にログインする。
+
+```
+docker-compose exec mariadb bash
+mariadb -u root -D piro -ppiroro
+```
+
+`-u`の値を`root`にし、パスワードは`piroro`と異なっていることに注意！
+
+以下のコマンドでユーザ`piro`に対して、データベース`piro`の`CREATE, ALTER, DROP, REFERENCES`の権限を付与する。  
+
+```
+grant SELECT, CREATE, ALTER, DROP, UPDATE, REFERENCES ON piro.* to piro;
+```
+
+`GRANT ALL ON *.* to ユーザA`は結構危険です！  
+特に`*.*`の箇所は`(DB名).(テーブル名)`で`*.*`は`MySQL`上の全DB(`*`)の全権限(`*`)をユーザAに付与ということになります。
+
 
 この画面で新しいDBの作成、ユーザ作成、テーブル作成、テーブルのデータ操作が可能
 
@@ -184,6 +253,10 @@ DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT
 
 docker-compose.ymlと同じフォルダの.envのシンボリックリンクを作成し、prismaでも.envとして読ませる
 
+```
+npx nuxi dev --dotenv ../.env
+```
+
 ## migration
 
 `prisma`を使ってデータベースのテーブル構築
@@ -232,7 +305,7 @@ const addNewUser = () => {
 `<template>`内に  
 
 ```
-<v-form @submit="addNewUser">
+<form @submit="addNewUser">
  <v-text-field label="name"></v-text-field> 
  <v-text-field label="email"></v-text-field> 
  <v-btn type="submit">submit</v-btn>
