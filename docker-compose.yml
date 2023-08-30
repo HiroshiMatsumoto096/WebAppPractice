@@ -4,12 +4,12 @@ services:
     image: mariadb
     restart: always
     ports:
-      - 3308:3306
+      - ${MYSQL_PORT}:3306
     environment:
-      MARIADB_ROOT_PASSWORD: piroro
-      MARIADB_DATABASE: piro
-      MARIADB_USER: piro
-      MARIADB_PASSWORD: piro
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MYSQL_DATABASE}
+      MARIADB_USER: ${MYSQL_USER}
+      MARIADB_PASSWORD: ${MYSQL_PASSWORD}
       TZ: 'Asia/Tokyo'
     volumes:
       - ./MariaDB/data:/var/lib/mysql
