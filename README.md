@@ -403,7 +403,25 @@ curl localhost:3000/api/user
 
 [x] バックエンド通信確認
 
+<script>の中に以下を追加
+```typescript
+const user_list_header = [
+    {
+        key: 'name',
+        title: '名前',
+        align: 'start', 
+        width: 70,
+    },
+    {
+        key: 'email',
+        title: 'email', 
+        align: 'center',
+        width: 90,
+    },
+]
+```
 
+<template>の中に以下を追加
 ```html
 <v-card variant="flat" class="ma-6">
     <v-card-title align="center">
@@ -446,8 +464,10 @@ const getUser = async () => {
     return response.data 
 }
 */
-
+```
 新しいユーザを追加して動作確認
+
+```
 
 ```
 
