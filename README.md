@@ -40,7 +40,7 @@ export default defineNuxtConfig({
 @use "vuetify/styles";
 ```
 
-`server/plugins/vuetify.ts`
+`plugins/vuetify.ts`
 
 ``` typescript
 import { createVuetify } from 'vuetify'
@@ -121,7 +121,7 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 MariaDB [piro]>
 ```
 
-DBに権限付与  
+### DBに権限付与  
 
 `root`ユーザで`mariadb`にログインする。
 
@@ -203,6 +203,7 @@ https://www.prisma.io/docs/getting-started/quickstart
 
 ```
 yarn add prisma typescript ts-node @types/node
+yarn add @prisma/client
 ```
 
 MariaDBとの連携設定
@@ -238,6 +239,10 @@ https://pris.ly/d/getting-started
 1. `.env`に使用するDBを指す`DATABASE_URL`変数の設定を設けよ.  
 2. `prisma db pull` をつかって使用中の`DB`設定(`schema`)を`prisma`に取り込む.
 3. `prisma generate`で`prisma client`を生成する
+
+
+`npx/yarn(どちらでもよい) prisma generate`
+
 
 `.env`
 ```bash
@@ -291,7 +296,6 @@ model User {
 yarn prisma migrate dev --name init
 ```
 
-
 ## CRUD
 
 Nuxt Server側
@@ -319,7 +323,7 @@ const addNewUser = () => {
 }
 ```
 
-`<script setup lang="ts"></script>`内に以下を追加
+`<template></template>`内に以下を追加
 ```typescript
 <v-card-text align="center">
    <v-form @submit="addNewUser">
@@ -330,6 +334,7 @@ const addNewUser = () => {
 </v-card-text>
 ```
 
+`server/api/user.ts`内に以下を追加
 ```typescript
 import { PrismaClient } from `@prisma/client` 
 
@@ -352,7 +357,7 @@ export default defineEventHandler(async (event) => {
 
 ボタン押下後、DB確認
 
-コンソール、MariaDBの確認
+コンソール、  MariaDBの確認
 
 ```bash
 MariaDB [piro]> select * from User;
