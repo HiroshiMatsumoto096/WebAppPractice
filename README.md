@@ -401,7 +401,7 @@ curl localhost:3000/api/user
 ]%
 ```
 
-[x] バックエンド通信確認
+[X] バックエンド通信確認
 
 <script>の中に以下を追加  
 
@@ -468,6 +468,7 @@ const getUser = async () => {
 }
 */
 ```
+
 新しいユーザを追加して動作確認
 
 ### D: Delete
@@ -529,6 +530,7 @@ user_list_header.value = [
 ```
 
 `user.delete.ts`
+
 ```typescript
 import { PrismaClient } from `@prisma/client` 
 
@@ -546,4 +548,3 @@ export default defineEventHandler(async (event) => {
     const response = await prisma.$disconnect()
 })
 ```
-
