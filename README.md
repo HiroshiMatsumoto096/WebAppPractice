@@ -405,6 +405,12 @@ curl localhost:3000/api/user
 
 <script>の中に以下を追加
 ```typescript
+import { VDataTable } from 'vuetify/labs/VDataTable'
+
+....
+....
+....
+
 const user_list_header = [
     {
         key: 'name',
