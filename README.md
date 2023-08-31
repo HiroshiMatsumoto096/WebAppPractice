@@ -158,7 +158,7 @@ https://nuxt.com/docs/guide/directory-structure/server
 
 ### API動作確認
 
-`server/api/hello.ts` に、以下を記述
+`server/api/hello.ts` に以下を記述
 
 ``` Typescript
 export default defineEventHandler((event) => {
@@ -240,7 +240,7 @@ https://pris.ly/d/getting-started
 3. `prisma generate`で`prisma client`を生成する
 
 `.env`
-```
+```bash
 MYSQL_ROOT_PASSWORD="piroro"
 MYSQL_DATABASE="piro"
 MYSQL_USER="piro"
@@ -251,7 +251,7 @@ MYSQL_PORT="3308"
 DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}"
 ```
 
-docker-compose.ymlと同じフォルダの.envのシンボリックリンクを作成し、prismaでも.envとして読ませる
+docker-compose.ymlと同じフォルダの.envのシンボリックリンクを作成し、prismaでも`.env`として読ませる
 
 ```
 npx nuxi dev --dotenv ../.env
@@ -261,9 +261,11 @@ npx nuxi dev --dotenv ../.env
 
 `prisma`を使ってデータベースのテーブル構築
 
+### マイグレーションファイル作成
+
 `prisma/schema.prisma`
 
-```
+```typescript
 generator client {
   provider = "prisma-client-js"
 }
@@ -281,66 +283,30 @@ model User {
 }
 ```
 
-マイグレーション処理実行
+### マイグレーション処理実行
 
-```
+マイグレーション：定義ファイルを用いてDBテーブル構築を行う
+
+```bash
 yarn prisma migrate dev --name init
 ```
-
-### API Access確認
-
-`index.vue`の`<script>`内に  
-```
-const addNewUser = () => {
-    const response = useFetch('/api/user', {
-       method: 'POST',
-       body: { 
-            name: 'Hiroshi Matsumoto',
-            email: 'piro@michiru.co.jp',
-        } 
-    })
-}
-```
-
-`<template>`内に  
-
-```
-<form @submit="addNewUser">
- <v-text-field label="name"></v-text-field> 
- <v-text-field label="email"></v-text-field> 
- <v-btn type="submit">submit</v-btn>
-</v-form> 
-```
-
-`server/api/user.posts.ts`に  
-
-```
-export default defineEventHandler(async (event) => {
-    const body = await readBody(event)
-    console.log(body)
-})
-```
-
-ボタン動作確認
-
-ターミナルに以下が表示されればOK
-```
-user.post.ts
-{ name: 'Hiroshi Matsumoto' }
-```
-
-[x] フロントとバックエンドの通信確認  
-[x] バックエンドの動作確認  
-[x] バックエンドのconsole.log (プリント)確認
 
 
 ## CRUD
 
+Nuxt Server側
+
+https://nuxt.com/docs/guide/directory-structure/server#matching-http-method
+
+
+https://nuxt.com/docs/guide/directory-structure/server#handling-requests-with-body
+
 ### C: create
 
-```
-const name = ref("Hiroshi Matsumoto")
-const email = ref("matsumoto@michiru.co.jp")
+`<script setup lang="ts"></script>`内に以下を追加
+```typescript
+const name = ref("Hiroshi Matsumoto") // テスト用デフォ値設定
+const email = ref("matsumoto@michiru.co.jp") // テスト用デフォ値設定
 
 const addNewUser = () => {
     const response = useFetch('/api/user', {
@@ -353,8 +319,8 @@ const addNewUser = () => {
 }
 ```
 
-
-```
+`<script setup lang="ts"></script>`内に以下を追加
+```typescript
 <v-card-text align="center">
    <v-form @submit="addNewUser">
      <v-text-field v-model=name label="name"></v-text-field> 
@@ -364,7 +330,7 @@ const addNewUser = () => {
 </v-card-text>
 ```
 
-```
+```typescript
 import { PrismaClient } from `@prisma/client` 
 
 const prisma = new PrismaClient()
@@ -384,19 +350,11 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
-```
-model User {
-    id          Int         @id @default(autoincrement())
-    createdAt   DateTime    @default(now())
-    email       String      @unique
-    name        String?
-}
-```
-
-
 ボタン押下後、DB確認
 
-```
+コンソール、MariaDBの確認
+
+```bash
 MariaDB [piro]> select * from User;
 +----+-------------------------+-------------------------+-------------------+
 | id | createdAt               | email                   | name              |
@@ -406,12 +364,12 @@ MariaDB [piro]> select * from User;
 1 row in set (0.000 sec)
 ```
 
-
 ### R: read
 
-`server/api/user.get.ts`
+以下のファイルを作成
+`server/api/user.ts`
 
-```
+```typescript
 import { PrismaClient } from `@prisma/client` 
 
 const prisma = new PrismaClient()
@@ -423,9 +381,8 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
-
 `curl localhost:3000/api/user`
-```
+```json
 [
   {
     "id": 1,
@@ -439,7 +396,7 @@ export default defineEventHandler(async (event) => {
 [x] バックエンド通信確認
 
 
-```
+```html
 <v-card variant="flat" class="ma-6">
     <v-card-title align="center">
       ユーザ
@@ -467,7 +424,7 @@ export default defineEventHandler(async (event) => {
 
 フェッチ呼び出し追加
 
-```
+```typescript
 const {data:user_list, error:user_list_error, refresh:refreshUserList} = await useFetch('/api/user')
 /*
 const user_list = reft([])
@@ -487,7 +444,7 @@ const getUser = async () => {
 ```
 
 ### D: Delete
-```
+```typescript
 const delUser = async (user_id) => {
     console.log('delUser')
     const response = await useFetch('/api/user', {
@@ -502,7 +459,7 @@ const delUser = async (user_id) => {
 }
 ```
 
-```
+```typescript
 const user_list_header = ref([])
 user_list_header.value = [
     {
@@ -526,7 +483,7 @@ user_list_header.value = [
 ]
 ```
 
-```
+```html
 <v-card-text align="center">
     <v-data-table :items="user_list" :headers="user_list_header">
         <template v-slot:item.name="{item}">
@@ -544,7 +501,7 @@ user_list_header.value = [
 ```
 
 `user.delete.ts`
-```
+```typescript
 import { PrismaClient } from `@prisma/client` 
 
 const prisma = new PrismaClient()

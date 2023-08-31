@@ -8,30 +8,35 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 // const { data:user_data } = await useFetch('/api/user')
 
 // 
-/*
-const user_id = ref(11)
-const name = ref("Hiroshi Matsumoto")
-const email = ref("matsumoto@michiru.co.jp")
-*/
 const user_id = ref()
-const name = ref()
-const email = ref()
+const name = ref("Piro")
+const email = ref("piro@michiru.co.jp")
+const loaded_info = ref(false)
 
-const upsertUser = () => {
-    console.log(user_id.value)
-    console.log(name.value)
-    console.log(email.value)
+// POST
+const addUser = () => {
     const response = useFetch('/api/user', {
-       method: 'UPDATE',
+       method: 'POST',
        body: { 
             user_id: user_id.value,
             name: name.value,
             email: email.value,
         } 
     })
-    console.log(response.error)
 }
-
+// UPSERT -> PUT
+const upsertUser = () => {
+    const response = useFetch('/api/user', {
+       method: 'PUT',
+       body: { 
+            user_id: user_id,
+            name: name,
+            email: email,
+        } 
+    })
+    refreshUserList()
+}
+// GET
 const {data:user_list, error:user_list_error, refresh:refreshUserList} = await useFetch('/api/user')
 // const user_list = await useFetch('/api/user', transform: result => result.data)
 /*
@@ -46,8 +51,8 @@ const getUser = async () => {
     return response.data 
 }
 */
-
-const delUser = async (user_id) => {
+// DELETE
+const delUser = async (user_id:Number) => {
     console.log('delUser')
     const response = await useFetch('/api/user', {
         body: {user_id: user_id}, 
@@ -59,18 +64,18 @@ const delUser = async (user_id) => {
     await refreshUserList()
 }
 
-
-const loadUser = async (target_user_id) => {
+//
+const loadUser = async (target_user_id: Number) => {
     console.log('loadUser')
-    const match_user = user_list.value.find((user) => user.id === target_user_id)
+    const match_user = user_list.value.find((user:any) => user.id === target_user_id)
     user_id.value = match_user.id 
     name.value = match_user.name
     email.value = match_user.email
+    loaded_info.value = true
 }
 
 
-const user_list_header = ref([])
-user_list_header.value = [
+const user_list_header = [
     {
         key: 'name',
         title: '名前',
@@ -92,6 +97,7 @@ user_list_header.value = [
 ]
 
 onMounted(() => {
+
 })
 
 </script>
@@ -129,9 +135,10 @@ onMounted(() => {
            入力 
         </v-card-title>
         <v-card-text align="center">
-           <v-form @submit="upsertUser">
+           <v-form @submit.prevent="upsertUser">
              <v-text-field v-model=name label="name"></v-text-field> 
-             <v-text-field v-model=email label="email"></v-text-field> 
+             <v-text-field v-if="loaded_info" disabled v-model=email label="email"></v-text-field> 
+             <v-text-field v-else v-model=email label="email"></v-text-field> 
              <v-btn type="submit">submit</v-btn>
            </v-form> 
         </v-card-text>
