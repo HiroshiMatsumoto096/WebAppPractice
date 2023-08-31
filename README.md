@@ -318,7 +318,7 @@ const addNewUser = () => {
        body: { 
             name: name.value,
             email: email.value
-        } 
+      } 
     })
 }
 ```
@@ -386,7 +386,10 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
-`curl localhost:3000/api/user`
+```bash
+curl localhost:3000/api/user
+```
+
 ```json
 [
   {
