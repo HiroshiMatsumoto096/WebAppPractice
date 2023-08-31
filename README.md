@@ -403,13 +403,10 @@ curl localhost:3000/api/user
 
 [x] バックエンド通信確認
 
-<script>の中に以下を追加
-```typescript
-import { VDataTable } from 'vuetify/labs/VDataTable'
+<script>の中に以下を追加  
 
-....
-....
-....
+``` typescript
+import { VDataTable } from 'vuetify/labs/VDataTable'
 
 const user_list_header = [
     {
@@ -473,11 +470,8 @@ const getUser = async () => {
 ```
 新しいユーザを追加して動作確認
 
-```
-
-```
-
 ### D: Delete
+  
 ```typescript
 const delUser = async (user_id) => {
     console.log('delUser')
