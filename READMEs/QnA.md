@@ -7,18 +7,40 @@ https://qumeru.com/magazine/364
 
 https://stackoverflow.com/questions/205853/why-would-a-javascript-variable-start-with-a-dollar-sign
 
-慣例的に頭に
-
+調査した結果、`$`に特に意味はなく、メソッド名の一部。
+`jQuery`とか`php`の慣習を受けて？
 
 ## useFetch と useAsyncData の違い
 
+### useFetch
+
+useFetchはuseAsyncDataをラップしたもの
+
+```
+useFetch(URL) = useAsyncData('Fetch', () => $fetch(URL))
+```
+
+# useFetchの使い方
+
+通常使用だと以下の使い方でよい.
+
+`const {data, refresh, error, pending} = useFetch(URL)`
+
+
+
+https://nuxt.com/docs/api/composables/use-fetch
+
+https://nuxt.com/docs/api/composables/use-async-data
+
 https://blog.cloud-acct.com/posts/nuxt3-usefetch-cashe/
 
+https://nuxt.com/docs/api/composables/use-nuxt-data
+
+a key that is unique to the file name and line number of the instance of useAsyncData will be generated for you.
 
 ## nuxtのpagesルーティング
 
 - 自動版
-
     ``` typescript
     // 何か処理
     // 処理後、自動的にページ遷移したい
@@ -38,6 +60,4 @@ https://blog.cloud-acct.com/posts/nuxt3-usefetch-cashe/
 
 ## nuxt/pagesについて
 
-pages/asdf.vue
-pages/qwer.vue
 
