@@ -23,17 +23,7 @@ const addUser = () => {
             email: email.value,
         } 
     })
-}
-// UPSERT -> PUT
-const upsertUser = () => {
-    const response = useFetch('/api/user', {
-       method: 'PUT',
-       body: { 
-            user_id: user_id,
-            name: name,
-            email: email,
-        } 
-    })
+
     refreshUserList()
 }
 // GET
@@ -51,13 +41,26 @@ const getUser = async () => {
     return response.data 
 }
 */
+// UPSERT -> PUT
+const upsertUser = () => {
+    const response = useFetch('/api/user', {
+       method: 'PUT',
+       body: { 
+            user_id: user_id,
+            name: name,
+            email: email,
+        } 
+    })
+    refreshUserList()
+}
 // DELETE
 const delUser = async (user_id:Number) => {
     console.log('delUser')
-    const response = await useFetch('/api/user', {
+    const {data, refresh, status} = await useFetch('/api/user', {
         body: {user_id: user_id}, 
         method: 'DELETE',
     })
+
     if(response.error.value){
        console.log(response.error) 
     }
@@ -135,7 +138,7 @@ onMounted(() => {
            入力 
         </v-card-title>
         <v-card-text align="center">
-           <v-form @submit.prevent="upsertUser">
+           <v-form @submit.prevent="addUser">
              <v-text-field v-model=name label="name"></v-text-field> 
              <v-text-field v-if="loaded_info" disabled v-model=email label="email"></v-text-field> 
              <v-text-field v-else v-model=email label="email"></v-text-field> 
