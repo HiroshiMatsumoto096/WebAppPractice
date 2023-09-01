@@ -1,15 +1,4 @@
 # WebApp
 
-ユーザ管理ツール
-
-## 準備
-
-[環境構築](READMESs/01.環境構築.md)
-
-## CRUD
-
-[CRUD](READMESs/02.CRUD.md)
-
-## CRUD
-
-[CRUD](READMESs/02.CRUD.md)
+- [環境構築](READMEs/01.環境構築.md)
+- [CRUD](READMEs/02.CRUD.md)
