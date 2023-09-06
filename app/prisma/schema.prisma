@@ -15,4 +15,15 @@ model User {
     createdAt   DateTime    @default(now())
     email       String      @unique
     name        String?
+    posts       Post[]
+}
+
+
+
+model Post {
+    id          Int         @id @default(autoincrement())
+    createdAt   DateTime    @default(now())
+    // relation attribute is required for one-to-one or one-to-many 
+    author      User        @relation(fields: [authorId], references:[id])
+    authorId    Int
 }

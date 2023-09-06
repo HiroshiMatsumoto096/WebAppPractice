@@ -18,7 +18,29 @@ useFetchはuseAsyncDataをラップしたもの
 
 ```
 useFetch(URL) = useAsyncData('Fetch', () => $fetch(URL))
+
+useAsyncData('Fetch', () => $fetch(URL), {server:false})
 ```
+``` typescript
+const { data:user_list, refresh:refreshUserList } = useAsyncData('getUserList', () => $fetch('/api/user'), {server:false})
+```
+
+const target_user = ref()
+
+target_user.value = OBJECT
+
+const {data:fetch_url, refresh: refreshURL} = useAsyncData('Fetch', () => $fetch(URL), {
+    transform: r = r.value,
+    watch: target_user
+})
+
+const {data:fetch_url3, refresh:refreshURL3} = useAsyncData('Fetch', () => $fetch(URL3), {
+    transform: r = r.value,
+    watch: target_user
+})
+
+refresh()
+console.log(data)
 
 # useFetchの使い方
 

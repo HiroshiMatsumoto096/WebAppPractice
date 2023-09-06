@@ -60,16 +60,14 @@ const delUser = async (user_id:Number) => {
         body: {user_id: user_id}, 
         method: 'DELETE',
     })
-
-    if(response.error.value){
-       console.log(response.error) 
-    }
+    console.log(data)
     await refreshUserList()
 }
 
 //
 const loadUser = async (target_user_id: Number) => {
     console.log('loadUser')
+    // 
     const match_user = user_list.value.find((user:any) => user.id === target_user_id)
     user_id.value = match_user.id 
     name.value = match_user.name
@@ -99,6 +97,41 @@ const user_list_header = [
     },
 ]
 
+
+/*******
+* ユーザポスト関連
+********/
+const post_message = ref()
+const user_id_txt = ref()
+// POST
+const addPost = () => {
+    const response = useFetch('/api/post', {
+       method: 'POST',
+       body: { 
+            user_id: post_id.value,
+            name: name.value,
+            email: email.value,
+        } 
+    })
+
+    refreshPostList()
+}
+
+// data-table custom
+const post_list_header = [
+    {
+        key: 'name',
+        title: '名前',
+        align: 'start', 
+        width: 70,
+    },
+    {
+        key: 'message',
+        title: 'POST', 
+        align: 'center',
+        width: 90,
+    }
+]
 onMounted(() => {
 
 })
@@ -106,6 +139,34 @@ onMounted(() => {
 </script>
 
 <template>
+    <v-card variant="flat" class="ma-6">
+        <v-card-title align="center">
+          POST 
+        </v-card-title>
+        <v-card-text align="center">
+            <v-data-table :items="post_list" :headers="post_list_header">
+                <template v-slot:item.name="{item}">
+                    {{ item.raw.name }}
+                </template>
+                <template v-slot:item.email="{item}">
+                    {{ item.raw.message}}
+                </template>
+                <template #bottom></template>
+            </v-data-table>
+        </v-card-text>
+    </v-card>
+    <v-card class="ma-6">
+        <v-card-title align="center">
+           投稿 
+        </v-card-title>
+        <v-card-text align="center">
+           <v-form @submit.prevent="addPost">
+             <v-text-field v-model=user_id label="user-id"></v-text-field> 
+             <v-text-field v-model=post_message label="message"></v-text-field> 
+             <v-btn type="submit">submit</v-btn>
+           </v-form> 
+        </v-card-text>
+    </v-card>
     <v-card variant="flat" class="ma-6">
         <v-card-title align="center">
           ユーザ
@@ -138,7 +199,7 @@ onMounted(() => {
            入力 
         </v-card-title>
         <v-card-text align="center">
-           <v-form @submit.prevent="addUser">
+           <v-form @submit.prevent="upsertUser">
              <v-text-field v-model=name label="name"></v-text-field> 
              <v-text-field v-if="loaded_info" disabled v-model=email label="email"></v-text-field> 
              <v-text-field v-else v-model=email label="email"></v-text-field> 
