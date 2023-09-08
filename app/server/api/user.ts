@@ -1,9 +1,8 @@
-import { PrismaClient } from `@prisma/client` 
-const prisma = new PrismaClient()
+// import { PrismaClient } from `@prisma/client` 
+// const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => { 
     console.log('index.ts')
-    const users = await prisma.user.findMany()
     // const query = getQuery(event)
     // console.log(query)
     console.log(prisma)
