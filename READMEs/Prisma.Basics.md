@@ -78,15 +78,6 @@ https://pris.ly/d/getting-started
 
 `prisma/schema.prisma`がモデルファイルになる
 
-中は以下の３種類から成る
-- `datasource`
-- `generator`
-- `model`
-
-```prisma
-フィールド名、フィールドタイプ、タイプ修飾、アトリビュート
-```
-
 ```prisma
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
@@ -108,6 +99,23 @@ model User {
     posts       Post[]
 }
 ```
+
+中は以下の3つ要素から成る
+- `datasource`
+- `generator`
+- `model`
+
+#### `datasource`
+
+#### `generator`
+
+#### `model`
+
+```prisma
+フィールド名、フィールドタイプ、タイプ修飾、アトリビュート
+```
+
+
 ### 呼び出し
 
 `Prisma`で基本的な記述は以下のような記述となる
