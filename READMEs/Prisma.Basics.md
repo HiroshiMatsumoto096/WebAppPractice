@@ -80,7 +80,6 @@ https://pris.ly/d/getting-started
 
 中は以下の３種類から成る
 - `datasource`
-    - 
 - `generator`
 - `model`
 
