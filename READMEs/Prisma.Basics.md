@@ -36,7 +36,7 @@ yarn add @prisma/client
 yarn prisma init --datasource-provider mysql
 ```
 
-データソース
+データソース  
 https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#datasource
 
 
@@ -82,13 +82,13 @@ https://pris.ly/d/getting-started
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -106,14 +106,74 @@ model User {
 - `model`
 
 #### `datasource`
-
+- 接続先DBの設定
+- https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources
+- https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#datasource
 #### `generator`
+- 生成クライアントの特性決め
+- `provider`: どの言語のクライアントを生成するか
+    - 現在は `prisma-client-js`のみ
+- `binaryTarget`
+    - `Prisma`クライアントはいくつかのエンジンが使われている.
+    - プラットフォームに応じたエンジン選択が必要とされる.
+    - https://github.com/prisma/prisma-engines
+    - https://www.prisma.io/docs/concepts/components/prisma-schema/generators#binary-targets
+    - デフォルトでは`native`が選択されている
+    - `native`では`Prisma`が適切な設定を自動選択する
+- `previewFeatures`
+    - まだ本リリースでない機能を利用する際の入力場所
+    - https://www.prisma.io/docs/concepts/components/preview-features
+- 他にも同人(`Community`)が作成している`generator`がある.
+    - https://www.prisma.io/docs/concepts/components/prisma-schema/generators#community-generators
 
 #### `model`
 
-```prisma
-フィールド名、フィールドタイプ、タイプ修飾、アトリビュート
-```
+- RDBのテーブルに対応関係を作成する
+- `Typescript`では`type definition`が付与されるので`type safe`で扱える
+
+
+記述方法:
+
+以下の３要素から構成されている
+- Models
+    - 記述方法
+        ```prisma
+        フィールド名、フィールドタイプ、タイプ修飾、アトリビュート
+        ```
+    - https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-models
+    - https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-fields
+- Enums
+    - `enum Role {A B C}`などの列挙型を定義が可能
+        ``` prisma
+        model User {
+        id    Int     @id @default(autoincrement())
+        email String  @unique
+        name  String?
+        role  Role    @default(USER)
+        }
+
+        enum Role {
+        USER
+        ADMIN
+        }
+        ```
+    - https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums
+- Attributes and functions
+    - `@@unique`attributeを利用して複数フィールドの組合せでのunique性を持たせる
+        ``` prisma
+        model Post {
+        id         Int        @id @default(autoincrement())
+        createdAt  DateTime   @default(now())
+        title      String
+        published  Boolean    @default(false)
+        author     User       @relation(fields: [authorId], references: [id])
+        authorId   Int
+        categories Category[] @relation(references: [id])
+        @@unique([authorId, title])
+        }
+        ```
+    - https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-attributes
+
 
 
 ### 呼び出し
