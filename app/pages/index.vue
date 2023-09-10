@@ -2,6 +2,7 @@
 // index.vue
 console.log('index.vue')
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import { resourceLimits } from 'worker_threads'
 
 // const { data:hello_data } = await useFetch('/api/hello')
 // console.log(hello_data.value)
@@ -103,17 +104,19 @@ const user_list_header = [
 ********/
 const post_message = ref()
 const user_id_txt = ref()
+
+// Get
+const {data:post_list, refresh:refreshPostList} = useFetch('/api/post')
+
 // POST
 const addPost = () => {
     const response = useFetch('/api/post', {
        method: 'POST',
        body: { 
-            user_id: post_id.value,
-            name: name.value,
-            email: email.value,
+            user_id: user_id_txt.value,
+            message: name.value,
         } 
     })
-
     refreshPostList()
 }
 
