@@ -1,16 +1,3 @@
-# 目次
-
-1. `prisma`の設定
-    - [インストール](###-インストール)
-    - [設定](###-設定)
-2. [`SQL`の`select`に相当する動き](##-select)
-3. [`SQL`の`insert`に相当する動き](##-insert)
-4. [`SQL`の`update`に相当する動き]()
-5. [`SQL`の`delete`に相当する動き]()
-6. [table join](##-tablejoin)
-6. [`transaction`について]()
-7. [`row-level lock`について]()
-
 # Prisma
 ## セットアップ
 ### インストール
