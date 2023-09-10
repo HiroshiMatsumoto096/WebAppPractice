@@ -13,3 +13,5 @@ MariDB準備 ( docker )
 
 # CRUD
 nuxt3 + prismaを使って簡単な投稿サイトの構築する
+
+# test
