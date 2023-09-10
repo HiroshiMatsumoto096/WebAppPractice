@@ -41,7 +41,7 @@ More information in our documentation:
 https://pris.ly/d/getting-started
 ```
 
-1. `.env`に使用するDBを指す`DATABASE_URL`変数の設定を設けよ.  
+1. `.env`に使用するDBを指す`DATABASE_URL`変数の設定`する.  
     - `.env`ファイル
 
         ```bash
@@ -101,7 +101,7 @@ model User {
 - `provider`: どの言語のクライアントを生成するか
     - 現在は `prisma-client-js`のみ
 - `binaryTarget`
-    - `Prisma`クライアントはいくつかのエンジンが使われている.
+    - `Prisma`クライアントにはいくつかのエンジンが使われている.
     - プラットフォームに応じたエンジン選択が必要とされる.
     - https://github.com/prisma/prisma-engines
     - https://www.prisma.io/docs/concepts/components/prisma-schema/generators#binary-targets
@@ -192,6 +192,9 @@ await prisma.user.findUnique({
 })
 ```
 ## Select
+
+SQLの`Select`文に対応するメソッドの紹介
+
 
 ### select * 
 
@@ -322,7 +325,7 @@ export default defineEventHandler(async (event) => {
 ```
 ## Update
 ## Delete
-## TableJoin
+## Table Join
 
 SQLでは以下のような記述でテーブル結合を行うが、
 

@@ -11,8 +11,6 @@ https://nuxt.com/docs/guide/directory-structure/server#matching-http-method
 
 https://nuxt.com/docs/guide/directory-structure/server#handling-requests-with-body
 
-
-
 ## C: create
 
 `<script setup lang="ts"></script>`内に以下を追加  
@@ -318,6 +316,8 @@ export default defineEventHandler(async (event) => {
 ## CRUD⇔リクエスト
 
 間違えやすいので注意
+
+このようにリクエストに応じたレスポンス
 
 RESTful
 
