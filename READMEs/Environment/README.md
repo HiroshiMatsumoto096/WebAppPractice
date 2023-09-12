@@ -20,6 +20,9 @@ yarn add vuetify@latest
 ``` bash
 yarn add scss@latest
 ```
+``` bash
+yarn add sass@latest
+```
 
 `assets/main.scss`
 ``` scss
