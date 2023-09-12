@@ -163,7 +163,7 @@ MariaDB [database]>
 
 ``` bash
 docker-compose exec mariadb bash
-mariadb -u user -D database -ppass
+mariadb -u root -D database -prootpass
 ```
 
 `-u`の値を`user`にし、パスワードは`pass`と異なっていることに注意！
