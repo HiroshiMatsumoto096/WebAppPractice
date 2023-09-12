@@ -4,8 +4,10 @@
 
 サイト構築とともに`Nuxt.Js` + `Prisma`の使い方を学ぶことを目的とする
 
-## ユーザー管理
-流れとしてユーザー管理（登録、読込、更新、削除）を構築する
+## 作成の流れ
+流れとして
+1. ユーザー管理（登録、読込、更新、削除)の構築
+2. 投稿パートの構築
 
 
 登録 (`Create`)、読込 (`Read`)、更新 (`Update`)、削除 (`Delete`)のことを総じて`CRUD`という
@@ -72,6 +74,8 @@ localhost:3000/api/user
 詳しくは
 - https://nuxt.com/docs/guide/directory-structure/server#matching-http-method
 - https://nuxt.com/docs/guide/directory-structure/server#handling-requests-with-body
+
+# ユーザ管理
 
 ## 登録: Create
 
@@ -381,3 +385,4 @@ user_list_header.value = [
 </v-card-text>
 ```
 
+# 投稿パート
