@@ -318,10 +318,25 @@ model User {
 }
 ```
 
+## マイグレーション事前準備
+マイグレーション時に`.env`ファイルより`DB`パラメータを読み込ませる必要がある。
+
+`dotenv-cli`パッケージを利用することで解決できる。
+
+```
+npm install dotenv-cli
+```
+
 ## マイグレーション処理実行
 
 マイグレーション：定義ファイルを用いてDBテーブル構築を行う
 
 ```bash
-yarn prisma migrate dev --name init
+dotenv -e /home/h-matsumoto/Desktop/MICHIRU/BankApp/.env -- yarn prisma migrate dev
 ```
+
+以下の箇所が指定`.env`ファイルを読み込ませるコマンドになる。
+```bash
+dotenv -e /home/h-matsumoto/Desktop/MICHIRU/BankApp/.env -- 
+```
+`.env`までのフルパスで入力してください。
