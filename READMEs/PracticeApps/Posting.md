@@ -1,17 +1,79 @@
-# CRUD
+# ポスティングサイト
 
-Nuxt Server側のルーティング
+ポスティングサイトの構築
 
-クライアント側から投げられたリクエストに対してどの処理を実行するかのマッチング
+サイト構築とともに`Nuxt.Js` + `Prisma`の使い方を学ぶことを目的とする
 
-Mathing HTTP Method
+## ユーザー管理
+流れとしてユーザー管理（登録、読込、更新、削除）を構築する
 
-https://nuxt.com/docs/guide/directory-structure/server#matching-http-method
+
+登録 (`Create`)、読込 (`Read`)、更新 (`Update`)、削除 (`Delete`)のことを総じて`CRUD`という
+
+## CRUD⇔リクエスト
+
+`REST API`形式で構築していく。
+
+`REST API`ではCRUD操作とリクエストメソッドは以下のような対応関係にある.
+
+間違えやすいので注意
+
+|  CRUD  | リクエスト・メソッド |
+| :----- | :------------------: |
+| create |         POST         |
+| read   |         GET          |
+| update |         PUT          |
+| delete |        DELETE        |
+
+次項で説明するが`user.update.ts`のように
+`CRUD`名とリクエストメソッド名とごっちゃになりやすいので注意
+
+## Nuxt.js Server (API)
+
+`Nuxt`初期設定で`server`フォルダが作成され、その`server`フォルダに`api`フォルダに`api`スクリプトを設置することで`api`として動作する。
+
+```
+server/api/user.post.ts
+```
+
+ファイル名にAPIリクエストのメソッド名を追加することでリクエストに対応する.
+
+リクエスト・メソッドは
+登録は`POST`,
+読込は`GET`,
+更新は`PUT`,
+削除は`DELETE`となる。
+
+注意として`GET`メソッドにはリクエストメソッド名は不要.
+```
+server/api/user.get.ts
+```
+ではなく
+
+```
+server/api/user.ts
+```
+で、`GET`メソッドが動作する。
 
 
-https://nuxt.com/docs/guide/directory-structure/server#handling-requests-with-body
+`POST`リクエストを受けるスクリプト設置例
+```
+server/api/user.post.ts
+```
 
-## C: create
+上記の設置されたスクリプトに対してのエンドポイントURLは以下となる.
+
+```
+localhost:3000/api/user
+```
+
+このエンドポイントに対して`POST`リクエストを送信することで`user.post.ts`がリクエストを受ける.
+
+詳しくは
+- https://nuxt.com/docs/guide/directory-structure/server#matching-http-method
+- https://nuxt.com/docs/guide/directory-structure/server#handling-requests-with-body
+
+## 登録: Create
 
 `<script setup lang="ts"></script>`内に以下を追加  
 ```typescript
@@ -47,26 +109,31 @@ import { PrismaClient } from `@prisma/client`
 const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
-    console.log('user.post.ts')
     const body = await readBody(event)
-    console.log(body)
     const user = await prisma.user.create({
         data: {
             name: body.name,
             email: body.email
         },
     })
-    const response = await prisma.$disconnect()
-    console.log(response)
 })
 ```
 
-ボタン押下後、DB確認
+### 確認
 
-コンソール、  MariaDBの確認
+ブラウザを開き、`submit`ボタンを押下することで、登録される動きとなる。
+実際に、ボタン押下後、DB確認を行いたい。
+
+`MariaDB`に接続
+
+```
+docker-compose exec mariadb mariadb -user user -ppass -Ddatabase
+```
+
+`MariaDB`で確認
 
 ```bash
-MariaDB [piro]> select * from User;
+MariaDB [database]> select * from User;
 +----+-------------------------+-------------------------+-------------------+
 | id | createdAt               | email                   | name              |
 +----+-------------------------+-------------------------+-------------------+
@@ -75,7 +142,9 @@ MariaDB [piro]> select * from User;
 1 row in set (0.000 sec)
 ```
 
-## R: read
+[リアルタイム確認]()も確認しておくと追々便利である。
+
+## 読込: Read
 
 ### バックエンド側作成
 以下のファイルを作成  
@@ -169,12 +238,13 @@ const user_list_header = [
 フェッチ呼び出し追加
 
 ```typescript
+// useFetchを使ったやり方
 const {data:user_list, error:user_list_error, refresh:refreshUserList} = await useFetch('/api/user')
 /*
+// 関数化
 const user_list = reft([])
 // const userlist= await useFetch('/api/hello')
 const getUser = async () => {
-    console.log('getUser')
     const response = await useFetch('/api/user')
     if(response.error.value){
        console.log(response.error) 
@@ -186,9 +256,9 @@ const getUser = async () => {
 
 新しいユーザを追加して動作確認
 
-## U: Update
+## 更新: Update
 
-`pages/index.vue`の`<script>`内に
+`pages/index.vue`の`<script setup lang="ts"></script>`内に
 
 ``` typescript
 // upsert -> PUT
@@ -201,6 +271,7 @@ const upsertUser = () => {
             email: email,
         } 
     })
+    // ユーザ情報更新後、フロント側のユーザリスト更新(これで表示の自動更新がかかる)
     refreshUserList()
 }
 ```
@@ -213,8 +284,6 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     // 
     const body = await readBody(event)
-    console.log("uesr.puts.ts.start")
-    console.log(body)
     // update
     const user = await prisma.user.upsert({
         where: {
@@ -230,17 +299,32 @@ export default defineEventHandler(async (event) => {
             email: body.email            
         }
     })
-    const response = await prisma.$disconnect() // 不要
-    console.log(response)
-    console.log("uesr.puts.ts.end")
 })
 ```
 
-## D: Delete
+## 削除: Delete
+
+
+削除API`user.delete.ts`を作成
+```typescript
+import { PrismaClient } from `@prisma/client` 
+
+const prisma = new PrismaClient()
+
+export default defineEventHandler(async (event) => {
+    const body = await readBody(event)
+    const user = await prisma.user.delete({
+        where: {
+            id: body.user_id
+        },
+    })
+})
+```
+
+削除API呼び出しを作成
 
 ```typescript
 const delUser = async (user_id) => {
-    console.log('delUser')
     const response = await useFetch('/api/user', {
         body: {user_id: user_id}, 
         method: 'DELETE',
@@ -252,6 +336,8 @@ const delUser = async (user_id) => {
     await refreshUserList()
 }
 ```
+
+データテーブルに削除列を追加
 
 ```typescript
 const user_list_header = ref([])
@@ -276,6 +362,7 @@ user_list_header.value = [
     },
 ]
 ```
+削除列に削除ボタンを配置
 
 ```html
 <v-card-text align="center">
@@ -293,43 +380,4 @@ user_list_header.value = [
     </v-data-table>
 </v-card-text>
 ```
-
-`user.delete.ts`
-```typescript
-import { PrismaClient } from `@prisma/client` 
-
-const prisma = new PrismaClient()
-
-export default defineEventHandler(async (event) => {
-    console.log('user.delete.ts')
-    const body = await readBody(event)
-    console.log('body: ', body)
-    const user = await prisma.user.delete({
-        where: {
-            id: body.user_id
-        },
-    })
-    const response = await prisma.$disconnect() // 自動的にdisconnectされるので不要
-})
-```
-
-## CRUD⇔リクエスト
-
-間違えやすいので注意
-
-このようにリクエストに応じたレスポンス
-
-RESTful
-
-RPC
-
-|  CRUD  | リクエスト・メソッド |
-| :----- | :------------------: |
-| create |         POST         |
-| read   |         GET          |
-| update |         PUT          |
-| delete |        DELETE        |
-
-`user.update.ts`などは動かないので注意
-
 
