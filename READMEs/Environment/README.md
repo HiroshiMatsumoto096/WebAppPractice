@@ -17,6 +17,9 @@ npx nuxi init app
 ``` bash
 yarn add vuetify@latest
 ```
+``` bash
+yarn add scss@latest
+```
 
 `assets/main.scss`
 ``` scss
