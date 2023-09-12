@@ -142,7 +142,7 @@ root@11512asdf:/# mariadb -u user -D database -ppass
 コマンドオプション説明  
 - `-u`: ユーザ@`mariadb`の指定
 - `-D`: データベースの指定
-- `-ppiro`: ユーザ@`mariadb`のパスワード; `-p`に空白なしで続けて入力することでパスワード入力を回避
+- `-ppass`: ユーザ@`mariadb`のパスワード; `-p`に空白なしで続けて入力することでパスワード入力を回避
   - `-p`だけにしたら、別途パスワード入力が求められる
   - 本番環境などではこのパスワードを続けて記述する方法はお勧めできない
 
@@ -163,20 +163,16 @@ MariaDB [database]>
 
 ``` bash
 docker-compose exec mariadb bash
-mariadb -u root -D piro -ppiroro
+mariadb -u user -D database -ppass
 ```
 
-`-u`の値を`root`にし、パスワードは`piroro`と異なっていることに注意！
+`-u`の値を`user`にし、パスワードは`pass`と異なっていることに注意！
 
-以下のコマンドでユーザ`piro`に対して、データベース`piro`の`CREATE, ALTER, DROP, REFERENCES`の権限を付与する。  
+以下のコマンドでユーザ`user`に対して、データベース`database`の`CREATE, ALTER, DROP, REFERENCES`の権限を付与する。  
 
 ``` sql
-grant SELECT, CREATE, ALTER, DROP, UPDATE, REFERENCES ON piro.* to piro;
+grant SELECT, CREATE, ALTER, DROP, UPDATE, REFERENCES ON *.* to user;
 ```
-
-`GRANT ALL ON *.* to ユーザA`は結構危険です！  
-特に`*.*`の箇所は`(DB名).(テーブル名)`で`*.*`は`MySQL`上の全DB(`*`)の全権限(`*`)をユーザAに付与ということになります。
-
 
 この`MariaDB`の`REPL`で直接、新しいDBの作成、ユーザ作成、テーブル作成、テーブルのデータ操作などが可能。
 https://shelokuma.com/2023/02/17/command-list-for-mariadb/
