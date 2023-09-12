@@ -1,0 +1,15 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb
+    restart: always
+    ports:
+      - ${MARIADB_PORT}:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./MariaDB/data:/var/lib/mysql
