@@ -13,6 +13,7 @@ const addUser = async () => {
             email: input_email.value
         }
     })
+    refreshUserList()
 }
 
 const {data:user_list, refresh:refreshUserList} = await useFetch('/api/user')
@@ -30,21 +31,45 @@ const user_list_headers = [
     }
 ]
 
-const user_select = [
-        {        
-            key: 'a',
-            title: 'japan'
-        }, {
-            key: 'b',
-            title: 'us',
-        }, {
-            key: 'c',
-            title: 'uk'
+const selected_user = ref()
+if(user_list.value.length){
+    selected_user.value = user_list.value[0] 
+}
+
+watchEffect(() => {
+    console.log(selected_user.value)
+/*
+    user_select.value = user_list.value.map((user) => {
+        return {
+            'key': user.id,
+            'title': user.name
         }
-    ]
-onMounted(() => {
-console.log(user_list.value)
+    })
+*/
 })
+
+onMounted(() => {
+})
+
+const input_amount = ref(0)
+
+
+const addAccount = async () => {
+    console.log('addAccount')
+    console.log(selected_user.value)
+    console.log(input_amount.value)
+    const body = {
+        user_id: selected_user.value.id,
+        amount: parseInt(input_amount.value)
+    }
+    console.log(body)
+    const {data:user_data} = await useFetch('/api/account', {
+        method: 'POST',
+        body: body
+    })
+}
+
+
 </script>
 
 
@@ -66,7 +91,7 @@ console.log(user_list.value)
         user list
     </v-card-title>
     <v-card-text>
-        <v-data-table :items="user_list" :headers="user_list_headers">
+        <v-data-table :items="user_list" :headers="user_list_headers"> 
             <template v-slot:item.email={item}>
                {{ item.raw.email }}
             </template>
@@ -82,10 +107,9 @@ console.log(user_list.value)
         create accout  
     </v-card-title>
     <v-card-text>
-        <v-select :items="user_select">
-        </v-select> 
-        <v-text-field v-model=input_email></v-text-field>
-        <v-btn @click.stop.prevent="addUser" type="submit">submit</v-btn>
+        <v-select v-model=selected_user :items="user_list" item-title='name' item-value='id'></v-select>
+        <v-text-field v-model=input_amount></v-text-field>
+        <v-btn @click.stop.prevent="addAccount" type="submit">create</v-btn>
     </v-card-text>
 </v-card>
 </template>
